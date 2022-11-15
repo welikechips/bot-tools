@@ -22,21 +22,23 @@ class CommandRunBots:
         schema = client.get("https://{}/api-docs/".format(kwargs.domain))
 
         action = ["bots_bot", "list"]
-        params = {"guid": kwargs.guid}
+        action = ["assets_usernames", "list"]
+        #params = {"guid": kwargs.guid}
         result = client.action(schema, action, params=params)
 
-        if result.count == '1':
-            result = results['results'][0]
-            action = ["bots_bot", "partial_update"]
-            if result.total == 0:
-                params = {"guid": kwargs.guid, "in_process": False, "finished": True}
-                client.post(action, params=params)
-            elif result.finished is False and result.total > 0:
-                total = result.total - 1
-                action = ["bots_bot", "partial_update"]
-                params = {"guid": kwargs.guid, "in_process": True, "finished": False, "total": total}
-                client.post(action, params=params)
-                os.system(result.job_task)
+        print(result)
+#         if result.count == '1':
+#             result = results['results'][0]
+#             action = ["bots_bot", "partial_update"]
+#             if result.total == 0:
+#                 params = {"guid": kwargs.guid, "in_process": False, "finished": True}
+#                 client.post(action, params=params)
+#             elif result.finished is False and result.total > 0:
+#                 total = result.total - 1
+#                 action = ["bots_bot", "partial_update"]
+#                 params = {"guid": kwargs.guid, "in_process": True, "finished": False, "total": total}
+#                 client.post(action, params=params)
+#                 os.system(result.job_task)
 
 
 command = CommandRunBots()
