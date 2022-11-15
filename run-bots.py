@@ -19,7 +19,7 @@ class CommandRunBots:
         auth = coreapi.auth.TokenAuthentication(scheme='Token', token=kwargs.token, domain=kwargs.domain)
 
         client = coreapi.Client(auth=auth)
-        schema = client.get("http://{}/api-docs/".format(kwargs.domain))
+        schema = client.get("https://{}/api-docs/".format(kwargs.domain))
 
         action = ["bots_bot", "list"]
         params = {"guid": kwargs.guid}
