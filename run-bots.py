@@ -19,15 +19,17 @@ class CommandRunBots:
         auth = coreapi.auth.TokenAuthentication(scheme='Token', token=kwargs.token, domain=kwargs.domain)
 
         client = coreapi.Client(auth=auth)
-        schema = client.get("https://{}/api-docs/".format(kwargs.domain))
-
-        action = ["bots_bot", "list"]
-        action = ["asset_campaigns", "list"]
-        #params = {"guid": kwargs.guid}
-        params = {}
-        result = client.action(schema, action, params=params)
-
+        result = client.get("https://{}/asset_campaigns/".format(kwargs.domain))
         print(result)
+        #schema = client.get("https://{}/api-docs/".format(kwargs.domain))
+
+        #action = ["bots_bot", "list"]
+        #action = ["asset_campaigns", "list"]
+        #params = {"guid": kwargs.guid}
+        #params = {}
+        #result = client.action(schema, action, params=params)
+
+        #print(result)
 #         if result.count == '1':
 #             result = results['results'][0]
 #             action = ["bots_bot", "partial_update"]
