@@ -22,7 +22,7 @@ class CommandRunBots:
         schema = client.get("https://{}/api-docs/".format(kwargs.domain))
 
         action = ["bots_bot", "list"]
-        action = ["assets_usernames", "list"]
+        action = ["assets_campaigns", "list"]
         #params = {"guid": kwargs.guid}
         result = client.action(schema, action, params=params)
 
