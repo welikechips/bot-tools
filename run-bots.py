@@ -19,7 +19,7 @@ class CommandRunBots:
         auth = coreapi.auth.TokenAuthentication(scheme='Token', token=kwargs.token, domain=kwargs.domain)
 
         client = coreapi.Client(auth=auth)
-        result = client.get("https://{}/asset_campaigns/".format(kwargs.domain))
+        result = client.get("https://{}/api/asset_campaigns/".format(kwargs.domain))
         print(result)
         #schema = client.get("https://{}/api-docs/".format(kwargs.domain))
 
