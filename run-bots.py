@@ -61,7 +61,7 @@ class CommandRunBots:
                     else:
                         message = e
                     print('an exception occurred!')
-                    data = {"in_process": False, "finished": True, "result": message.decode("utf-8")}
+                    data = {"in_process": False, "finished": True, "result": message}
                     client.patch(job["url"], data=data, headers=headers)
                 finally:
                     print(job_result.decode("utf-8"))
