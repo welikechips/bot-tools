@@ -1,6 +1,9 @@
 import argparse
-import coreapi
 import os
+import requests
+import urllib.parse
+import json
+import subprocess
 
 parser = argparse.ArgumentParser(description='Runs bots by guid')
 parser.add_argument('domain', type=str, help='Domain to get bots from')
@@ -16,32 +19,46 @@ class CommandRunBots:
         pass
 
     def handle(self, kwargs):
-        auth = coreapi.auth.TokenAuthentication(scheme='Token', token=kwargs.token, domain=kwargs.domain)
+        client = requests.Session()
+        headers = {"Authorization": "Token {}".format(kwargs.token)}
+        data = {"guid": kwargs.guid, "finished": False}
+        result = client.get("https://{}/api/bots_bot/".format(kwargs.domain), data=data, headers=headers)
 
-        client = coreapi.Client(auth=auth)
-        result = client.get("https://{}/api/asset_campaigns/".format(kwargs.domain))
-        print(result)
-        #schema = client.get("https://{}/api-docs/".format(kwargs.domain))
+        results = json.loads(result.content)
 
-        #action = ["bots_bot", "list"]
-        #action = ["asset_campaigns", "list"]
-        #params = {"guid": kwargs.guid}
-        #params = {}
-        #result = client.action(schema, action, params=params)
-
-        #print(result)
-#         if result.count == '1':
-#             result = results['results'][0]
-#             action = ["bots_bot", "partial_update"]
-#             if result.total == 0:
-#                 params = {"guid": kwargs.guid, "in_process": False, "finished": True}
-#                 client.post(action, params=params)
-#             elif result.finished is False and result.total > 0:
-#                 total = result.total - 1
-#                 action = ["bots_bot", "partial_update"]
-#                 params = {"guid": kwargs.guid, "in_process": True, "finished": False, "total": total}
-#                 client.post(action, params=params)
-#                 os.system(result.job_task)
+        print(results)
+        if int(results["count"]) == 1:
+            bot_results = results["results"]
+            the_bot = bot_results[0]
+            the_bot_url = the_bot["url"]
+            if the_bot["finished"] is False and the_bot["in_process"] is False:
+                url = the_bot_url
+                data = {"in_process": False}
+                bot_update = client.patch(url, data=data, headers=headers)
+                print("bot_updated:")
+                print(bot_update.content)
+            path = urllib.parse.urlparse(the_bot_url).path
+            bot_id = os.path.basename(os.path.dirname(path))
+            data = {"bot": bot_id, "finished": False, "in_process": False}
+            the_jobs_results = client.get("https://{}/api/bots_job/".format(kwargs.domain), params=data,
+                                          headers=headers)
+            the_jobs = json.loads(the_jobs_results.content)
+            if int(the_jobs["count"]) >= 1:
+                os.system(the_bot["bot_task"])
+                # run 1 job
+                job = the_jobs["results"][0]
+                print(job["job_name"])
+                print(job["job_task"])
+                data = {"in_process": True}
+                client.patch(job["url"], data=data, headers=headers)
+                job_result = subprocess.check_output(job["job_task"])
+                print(job_result.decode("utf-8"))
+                data = {"in_process": False, "finished": True, "result": job_result.decode("utf-8")}
+                client.patch(job["url"], data=data, headers=headers)
+            else:
+                url = the_bot_url
+                data = {"in_process": False, "finished": True}
+                client.patch(url, data=data, headers=headers)
 
 
 command = CommandRunBots()
