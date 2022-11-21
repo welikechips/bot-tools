@@ -21,8 +21,8 @@ class CommandRunBots:
     def handle(self, kwargs):
         client = requests.Session()
         headers = {"Authorization": "Token {}".format(kwargs.token)}
-        data = {"guid": kwargs.guid, "finished": False}
-        result = client.get("https://{}/api/bots_bot/".format(kwargs.domain), data=data, headers=headers)
+        params = {"guid": kwargs.guid, "finished": False}
+        result = client.get("https://{}/api/bots_bot/".format(kwargs.domain), params=params, headers=headers)
 
         results = json.loads(result.content)
 
@@ -33,14 +33,14 @@ class CommandRunBots:
             the_bot_url = the_bot["url"]
             if the_bot["finished"] is False and the_bot["in_process"] is False:
                 url = the_bot_url
-                data = {"in_process": False}
+                data = {"in_process": True}
                 bot_update = client.patch(url, data=data, headers=headers)
                 print("bot_updated:")
                 print(bot_update.content)
             path = urllib.parse.urlparse(the_bot_url).path
             bot_id = os.path.basename(os.path.dirname(path))
-            data = {"bot": bot_id, "finished": False, "in_process": False}
-            the_jobs_results = client.get("https://{}/api/bots_job/".format(kwargs.domain), params=data,
+            params = {"bot": bot_id, "finished": False, "in_process": False}
+            the_jobs_results = client.get("https://{}/api/bots_job/".format(kwargs.domain), params=params,
                                           headers=headers)
             the_jobs = json.loads(the_jobs_results.content)
             if int(the_jobs["count"]) >= 1:
@@ -52,7 +52,6 @@ class CommandRunBots:
                 data = {"in_process": True}
                 client.patch(job["url"], data=data, headers=headers)
 
-                job_result = ''
                 try:
                     job_result = subprocess.check_output(job["job_task"])
                     print(job_result.decode("utf-8"))
