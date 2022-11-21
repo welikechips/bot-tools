@@ -53,9 +53,17 @@ class CommandRunBots:
                 client.patch(job["url"], data=data, headers=headers)
 
                 try:
-                    job_result = subprocess.check_output(job["job_task"])
-                    print(job_result.decode("utf-8"))
-                    data = {"in_process": False, "finished": True, "result": job_result.decode("utf-8")}
+                    sp = subprocess.Popen(job["job_task"],
+                                          shell=True,
+                                          stdout=subprocess.PIPE,
+                                          stderr=subprocess.PIPE)
+                    rc = sp.wait()
+
+                    # Separate the output and error by communicating with sp variable.
+                    # This is similar to Tuple where we store two values to two different variables
+                    out, err = sp.communicate()
+                    print(out)
+                    data = {"in_process": False, "finished": True, "result": out}
                     client.patch(job["url"], data=data, headers=headers)
                     url = the_bot_url
                     total = the_bot["total"] + 1
