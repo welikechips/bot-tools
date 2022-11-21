@@ -7,6 +7,7 @@ import subprocess
 
 parser = argparse.ArgumentParser(description='Runs bots by guid')
 parser.add_argument('domain', type=str, help='Domain to get bots from')
+parser.add_argument('replace_domain', type=str, help='Domain ro replace for redirector')
 parser.add_argument('token', type=str, help='Token to use when connecting to api')
 parser.add_argument('guid', type=str, help='guid to pull bot commands from')
 
@@ -30,7 +31,7 @@ class CommandRunBots:
         if int(results["count"]) == 1:
             bot_results = results["results"]
             the_bot = bot_results[0]
-            the_bot_url = the_bot["url"]
+            the_bot_url = the_bot["url"].replace(kwargs.replace_domain, kwargs.domain)
             if the_bot["finished"] is False and the_bot["in_process"] is False:
                 url = the_bot_url
                 data = {"in_process": True}
@@ -50,7 +51,8 @@ class CommandRunBots:
                 print(job["job_name"])
                 print(job["job_task"])
                 data = {"in_process": True}
-                client.patch(job["url"], data=data, headers=headers)
+                job_url = job["url"].replace(kwargs.replace_domain, kwargs.domain)
+                client.patch(job_url, data=data, headers=headers)
 
                 try:
                     sp = subprocess.Popen(job["job_task"],
@@ -64,7 +66,7 @@ class CommandRunBots:
                     out, err = sp.communicate()
                     print(out)
                     data = {"in_process": False, "finished": True, "result": out}
-                    client.patch(job["url"], data=data, headers=headers)
+                    client.patch(job_url, data=data, headers=headers)
                     url = the_bot_url
                     total = the_bot["total"] + 1
                     data = {"total": total}
@@ -76,7 +78,7 @@ class CommandRunBots:
                         message = e
                     print('an exception occurred!')
                     data = {"in_process": False, "finished": True, "result": message}
-                    client.patch(job["url"], data=data, headers=headers)
+                    client.patch(job_url, data=data, headers=headers)
 
             else:
                 url = the_bot_url
