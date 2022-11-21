@@ -51,10 +51,27 @@ class CommandRunBots:
                 print(job["job_task"])
                 data = {"in_process": True}
                 client.patch(job["url"], data=data, headers=headers)
-                job_result = subprocess.check_output(job["job_task"])
-                print(job_result.decode("utf-8"))
-                data = {"in_process": False, "finished": True, "result": job_result.decode("utf-8")}
-                client.patch(job["url"], data=data, headers=headers)
+
+                job_result = ''
+                try:
+                    job_result = subprocess.check_output(job["job_task"])
+                except Exception as e:
+                    if hasattr(e, 'message'):
+                        message = e.message
+                    else:
+                        message = e
+                    print('an exception occurred!')
+                    data = {"in_process": False, "finished": True, "result": message.decode("utf-8")}
+                    client.patch(job["url"], data=data, headers=headers)
+                finally:
+                    print(job_result.decode("utf-8"))
+                    data = {"in_process": False, "finished": True, "result": job_result.decode("utf-8")}
+                    client.patch(job["url"], data=data, headers=headers)
+                    url = the_bot_url
+                    total = the_bot["total"] + 1
+                    data = {"total": total}
+                    client.patch(url, data=data, headers=headers)
+
             else:
                 url = the_bot_url
                 data = {"in_process": False, "finished": True}
