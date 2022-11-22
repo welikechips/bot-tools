@@ -10,6 +10,7 @@ parser.add_argument('domain', type=str, help='Domain to get bots from')
 parser.add_argument('replace_domain', type=str, help='Domain ro replace for redirector')
 parser.add_argument('token', type=str, help='Token to use when connecting to api')
 parser.add_argument('guid', type=str, help='guid to pull bot commands from')
+parser.add_argument('--job_index', type=int, default=0, help='The job index to run')
 
 args = parser.parse_args()
 
@@ -47,7 +48,7 @@ class CommandRunBots:
             if int(the_jobs["count"]) >= 1:
                 os.system(the_bot["bot_task"])
                 # run 1 job
-                job = the_jobs["results"][0]
+                job = the_jobs["results"][kwargs.job_index]
                 print(job["job_name"])
                 print(job["job_task"])
                 data = {"in_process": True}
