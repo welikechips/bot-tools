@@ -68,10 +68,18 @@ class CommandRunBots:
                     print(out)
                     data = {"in_process": False, "finished": True, "result": out}
                     client.patch(job_url, data=data, headers=headers)
-                    url = the_bot_url
                     total = the_bot["total"] + 1
-                    data = {"total": total}
-                    client.patch(url, data=data, headers=headers)
+                    params = {"bot": bot_id, "finished": False, "in_process": False}
+                    the_jobs_results = client.get("https://{}/api/bots_job/".format(kwargs.domain), params=params,
+                                                  headers=headers)
+                    the_jobs = json.loads(the_jobs_results.content)
+
+                    if int(the_jobs["count"]) >= total:
+                        data = {"total": total, "finished": True, "in_process": False}
+                        client.patch(the_bot_url, data=data, headers=headers)
+                    else:
+                        data = {"total": total}
+                        client.patch(the_bot_url, data=data, headers=headers)
                 except Exception as e:
                     if hasattr(e, 'message'):
                         message = e.message
