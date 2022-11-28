@@ -48,14 +48,14 @@ class CommandRunBots:
             if int(the_jobs["count"]) >= 1:
                 os.system(the_bot["bot_task"])
                 # run 1 job
-                job = the_jobs["results"][kwargs.job_index]
-                print(job["job_name"])
-                print(job["job_task"])
-                data = {"in_process": True}
-                job_url = job["url"].replace(kwargs.replace_domain, kwargs.domain)
-                client.patch(job_url, data=data, headers=headers)
 
                 try:
+                    job = the_jobs["results"][kwargs.job_index]
+                    print(job["job_name"])
+                    print(job["job_task"])
+                    data = {"in_process": True}
+                    job_url = job["url"].replace(kwargs.replace_domain, kwargs.domain)
+                    client.patch(job_url, data=data, headers=headers)
                     sp = subprocess.Popen(job["job_task"],
                                           shell=True,
                                           stdout=subprocess.PIPE,
