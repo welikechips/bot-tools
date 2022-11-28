@@ -48,7 +48,7 @@ class CommandRunBots:
             if int(the_jobs["count"]) >= 1:
                 os.system(the_bot["bot_task"])
                 # run 1 job
-
+                job_url = None
                 try:
                     job = the_jobs["results"][kwargs.job_index]
                     print(job["job_name"])
@@ -86,8 +86,9 @@ class CommandRunBots:
                     else:
                         message = e
                     print('an exception occurred!')
-                    data = {"in_process": False, "finished": True, "result": message}
-                    client.patch(job_url, data=data, headers=headers)
+                    if job_url is not None:
+                        data = {"in_process": False, "finished": True, "result": message}
+                        client.patch(job_url, data=data, headers=headers)
 
             else:
                 url = the_bot_url
