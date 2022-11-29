@@ -72,7 +72,7 @@ class CommandRunBots:
                     data = {"in_process": False, "finished": True, "result": out}
                     client.patch(job_url, data=data, headers=headers)
                     total = the_bot["total"] + 1
-                    params = {"bot": bot_id, "finished": True}
+                    params = {"bot": bot_id}
                     the_jobs_results = client.get("https://{}/api/bots_job/".format(kwargs.domain), params=params,
                                                   headers=headers)
                     the_jobs = json.loads(the_jobs_results.content)
