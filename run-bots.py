@@ -18,7 +18,7 @@ args = parser.parse_args()
 class CommandRunBots:
 
     def __init__(self):
-       pass
+        pass
 
     def handle(self, kwargs):
         client = requests.Session()
@@ -50,7 +50,10 @@ class CommandRunBots:
                 # run 1 job
                 job_url = None
                 try:
-                    job = the_jobs["results"][kwargs.job_index]
+                    if len(the_jobs["results"]) > kwargs.job_index:
+                        job = the_jobs["results"][len(the_jobs["results"])]
+                    else:
+                        job = the_jobs["results"][kwargs.job_index]
                     print(job["job_name"])
                     print(job["job_task"])
                     data = {"in_process": True}
@@ -85,7 +88,7 @@ class CommandRunBots:
                         message = e.message
                     else:
                         message = e
-                    print('an exception occurred!')
+                    print(f'an exception occurred! {message}')
                     if job_url is not None:
                         data = {"in_process": False, "finished": True, "result": message}
                         client.patch(job_url, data=data, headers=headers)
