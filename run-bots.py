@@ -76,7 +76,7 @@ class CommandRunBots:
                     the_jobs_results = client.get("https://{}/api/bots_job/".format(kwargs.domain), params=params,
                                                   headers=headers)
                     the_jobs = json.loads(the_jobs_results.content)
-
+                    print(the_jobs)
                     if total > int(the_jobs["count"]):
                         data = {"total": total, "finished": True, "in_process": False}
                         client.patch(the_bot_url, data=data, headers=headers)
