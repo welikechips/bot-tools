@@ -51,7 +51,7 @@ class CommandRunBots:
                 job_url = None
                 try:
                     if len(the_jobs["results"]) > kwargs.job_index:
-                        job = the_jobs["results"][len(the_jobs["results"])]
+                        job = the_jobs["results"][len(the_jobs["results"]) - 1]
                     else:
                         job = the_jobs["results"][kwargs.job_index]
                     print(job["job_name"])
