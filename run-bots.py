@@ -50,7 +50,7 @@ class CommandRunBots:
                 # run 1 job
                 job_url = None
                 try:
-                    if len(the_jobs["results"]) > kwargs.job_index:
+                    if kwargs.job_index > len(the_jobs["results"]):
                         job = the_jobs["results"][len(the_jobs["results"]) - 1]
                     else:
                         job = the_jobs["results"][kwargs.job_index]
